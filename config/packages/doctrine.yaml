@@ -1,7 +1,13 @@
 doctrine:
     dbal:
         url: '%env(resolve:DATABASE_URL)%'
-
+         # Add this section ⬇️
+        types:
+            uuid:   'Symfony\Bridge\Doctrine\Types\UuidType'
+        
+        # If you need to map existing database columns
+        mapping_types:
+            uuid: uuid
         # IMPORTANT: You MUST configure your server version,
         # either here or in the DATABASE_URL env var (see .env file)
         #server_version: '16'
