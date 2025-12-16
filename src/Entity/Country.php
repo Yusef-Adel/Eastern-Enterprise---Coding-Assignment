@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity]
-#[ORM\Table(name: 'countries')]
+#[ORM\Table(name:  'countries')]
 #[ORM\Index(name: 'idx_name', columns: ['name'])]
 #[ORM\Index(name: 'idx_region', columns: ['region'])]
 class Country
@@ -41,10 +41,10 @@ class Country
     #[ORM\Embedded(class:  Currency::class)]
     private Currency $currency;
 
-    #[ORM\Column(type:  'datetime_immutable')]
+    #[ORM\Column(type: 'datetime_immutable')]
     private \DateTimeImmutable $createdAt;
 
-    #[ORM\Column(type:  'datetime_immutable')]
+    #[ORM\Column(type: 'datetime_immutable')]
     private \DateTimeImmutable $updatedAt;
 
     public function __construct()
@@ -162,7 +162,7 @@ class Country
         return $this;
     }
 
-    public function setFlag(?string $flag): self
+    public function setFlag(? string $flag): self
     {
         $this->flag = $flag;
         $this->updateTimestamp();
@@ -197,9 +197,9 @@ class Country
             'population' => $this->population,
             'independent' => $this->independent,
             'flag' => $this->flag,
-            'currency' => $this->currency->toArray(),
-            'createdAt' => $this->createdAt->format('Y-m-d H:i:s'),
-            'updatedAt' => $this->updatedAt->format('Y-m-d H:i:s'),
+            'currency' => $this->currency ? $this->currency->toArray() : null,
+            'createdAt' => $this->createdAt ?  $this->createdAt->format('Y-m-d H: i:s') : null,
+            'updatedAt' => $this->updatedAt ? $this->updatedAt->format('Y-m-d H:i: s') : null,
         ];
     }
 }

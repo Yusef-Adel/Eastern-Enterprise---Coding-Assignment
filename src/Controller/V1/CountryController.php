@@ -120,7 +120,7 @@ class CountryController extends AbstractController
     /**
      * Update existing country
      */
-    #[Route('/{uuid}', name:  'update', methods: ['PUT'])]
+    #[Route('/{uuid}', name: 'update', methods: ['PATCH'])]
     public function update(string $uuid, Request $request): JsonResponse
     {
         $country = $this->countryRepository->findByUuid($uuid);
