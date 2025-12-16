@@ -3,4 +3,3 @@ controllers:
         path: ../src/Controller/V1
         namespace: App\Controller\V1
     type: attribute
-    prefix: /api/v1

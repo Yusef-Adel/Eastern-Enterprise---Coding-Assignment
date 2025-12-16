@@ -56,4 +56,64 @@ class CountryRepository extends ServiceEntityRepository
     {
         return $this->findBy([], ['name' => 'ASC']);
     }
+
+    /**
+     * Find countries with filters and pagination
+     */
+    public function findWithFilters(
+        ? string $region = null,
+        ?bool $independent = null,
+        int $page = 1,
+        int $limit = 10
+    ): array {
+        $qb = $this->createQueryBuilder('c')
+            ->orderBy('c.name', 'ASC');
+
+        if ($region !== null) {
+            $qb->andWhere('c.region = :region')
+               ->setParameter('region', $region);
+        }
+
+        if ($independent !== null) {
+            $qb->andWhere('c.independent = :independent')
+               ->setParameter('independent', $independent);
+        }
+
+        $qb->setFirstResult(($page - 1) * $limit)
+           ->setMaxResults($limit);
+
+        return $qb->getQuery()->getResult();
+    }
+
+    /**
+     * Count countries with filters
+     */
+    public function countWithFilters(
+        ?string $region = null,
+        ?bool $independent = null
+    ): int {
+        $qb = $this->createQueryBuilder('c')
+            ->select('COUNT(c. uuid)');
+
+        if ($region !== null) {
+            $qb->andWhere('c.region = :region')
+               ->setParameter('region', $region);
+        }
+
+        if ($independent !== null) {
+            $qb->andWhere('c.independent = :independent')
+               ->setParameter('independent', $independent);
+        }
+
+        return (int) $qb->getQuery()->getSingleScalarResult();
+    }
+
+    /**
+     * Delete a country by entity
+     */
+    public function delete(Country $country): void
+    {
+        $this->getEntityManager()->remove($country);
+        $this->getEntityManager()->flush();
+    }
 }
