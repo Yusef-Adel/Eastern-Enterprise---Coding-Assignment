@@ -28,19 +28,35 @@ class RestCountriesClient
     public function fetchAllCountries(): array
     {
         try {
+            $this->logger->info('Fetching countries from REST Countries API');
+
+            // Specify fields to avoid 400 error
+            $url = self::API_BASE_URL . '/all?fields=name,cca2,cca3,region,subregion,population,independent,flags,currencies,demonyms';
+
             $response = $this->httpClient->request(
                 'GET',
-                self::API_BASE_URL . '/all',
+                $url,
                 [
                     'timeout' => self::TIMEOUT,
+                    'headers' => [
+                        'Accept' => 'application/json',
+                        'User-Agent' => 'Symfony-Country-API/1.0',
+                    ],
                 ]
             );
 
             $statusCode = $response->getStatusCode();
 
             if ($statusCode !== 200) {
+                $body = $response->getContent(false);
+                
+                $this->logger->error('REST Countries API error', [
+                    'status_code' => $statusCode,
+                    'response' => $body
+                ]);
+
                 throw new \RuntimeException(
-                    "REST Countries API returned status code {$statusCode}"
+                    "REST Countries API returned status code {$statusCode}:  {$body}"
                 );
             }
 
@@ -53,7 +69,17 @@ class RestCountriesClient
             return $data;
 
         } catch (TransportExceptionInterface $e) {
-            $this->logger->error('Failed to fetch countries from REST Countries API', [
+            $this->logger->error('Transport error while fetching countries', [
+                'error' => $e->getMessage()
+            ]);
+
+            throw new \RuntimeException(
+                'Failed to fetch countries from REST Countries API: ' .  $e->getMessage(),
+                0,
+                $e
+            );
+        } catch (\Symfony\Contracts\HttpClient\Exception\HttpExceptionInterface $e) {
+            $this->logger->error('HTTP error while fetching countries', [
                 'error' => $e->getMessage()
             ]);
 

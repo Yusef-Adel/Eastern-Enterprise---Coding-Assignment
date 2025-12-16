@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Bridge\Doctrine\Types\UuidType;
 use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity]
@@ -15,8 +14,8 @@ use Symfony\Component\Uid\Uuid;
 class Country
 {
     #[ORM\Id]
-    #[ORM\Column(type: UuidType::NAME, unique: true)]
-    private Uuid $uuid;
+    #[ORM\Column(type: 'string', length: 36, unique: true)]
+    private string $uuid;
 
     #[ORM\Column(type: 'string', length: 255)]
     private string $name;
@@ -24,33 +23,33 @@ class Country
     #[ORM\Column(type: 'string', length: 100, nullable: true)]
     private ?string $region = null;
 
-    #[ORM\Column(type: 'string', length:  100, nullable: true)]
+    #[ORM\Column(type: 'string', length: 100, nullable: true)]
     private ?string $subRegion = null;
 
     #[ORM\Column(type: 'string', length: 100, nullable: true)]
     private ?string $demonym = null;
 
-    #[ORM\Column(type: 'integer', options: ['unsigned' => true, 'default' => 0])]
+    #[ORM\Column(type: 'integer', options:  ['unsigned' => true, 'default' => 0])]
     private int $population = 0;
 
     #[ORM\Column(type: 'boolean', options: ['default' => false])]
     private bool $independent = false;
 
-    #[ORM\Column(type: 'string', length: 500, nullable: true)]
+    #[ORM\Column(type: 'string', length: 500, nullable:  true)]
     private ?string $flag = null;
 
-    #[ORM\Embedded(class: Currency::class)]
+    #[ORM\Embedded(class:  Currency::class)]
     private Currency $currency;
 
     #[ORM\Column(type:  'datetime_immutable')]
     private \DateTimeImmutable $createdAt;
 
-    #[ORM\Column(type: 'datetime_immutable')]
+    #[ORM\Column(type:  'datetime_immutable')]
     private \DateTimeImmutable $updatedAt;
 
     public function __construct()
     {
-        $this->uuid = Uuid::v4();
+        $this->uuid = Uuid::v4()->toRfc4122();
         $this->currency = new Currency();
         $this->createdAt = new \DateTimeImmutable();
         $this->updatedAt = new \DateTimeImmutable();
@@ -58,7 +57,7 @@ class Country
 
     // === GETTERS ===
 
-    public function getUuid(): Uuid
+    public function getUuid(): string
     {
         return $this->uuid;
     }
@@ -115,7 +114,7 @@ class Country
 
     // === SETTERS ===
 
-    public function setUuid(Uuid $uuid): self
+    public function setUuid(string $uuid): self
     {
         $this->uuid = $uuid;
         return $this;
@@ -190,7 +189,7 @@ class Country
     public function toArray(): array
     {
         return [
-            'uuid' => $this->uuid->toRfc4122(),
+            'uuid' => $this->uuid,
             'name' => $this->name,
             'region' => $this->region,
             'subRegion' => $this->subRegion,
