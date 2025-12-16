@@ -1,0 +1,32 @@
+security:
+    password_hashers:
+        Symfony\Component\Security\Core\User\InMemoryUser: 'plaintext'
+
+    providers:
+        in_memory:  
+            memory:
+                users:  
+                    admin:
+                        password: 'secret123'
+                        roles: ['ROLE_ADMIN']
+
+    firewalls:
+        dev:
+            pattern: ^/(_(profiler|wdt)|css|images|js)/
+            security: false
+
+        api:
+            pattern: ^/api
+            stateless: true
+            http_basic: 
+                realm: 'Secured Area'
+
+        main:
+            lazy: true
+
+    access_control:
+        # Allow GET requests to be public
+        - { path: ^/api/v1/countries$, methods: [GET], roles: PUBLIC_ACCESS }
+        - { path:  ^/api/v1/countries/. +, methods: [GET], roles: PUBLIC_ACCESS }
+        # Require authentication for POST, PUT, DELETE
+        - { path: ^/api, roles: ROLE_ADMIN }
